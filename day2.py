@@ -3,8 +3,6 @@ import numpy as np
 with open("input/day2.txt") as day2:
     lines = day2.readlines()
 
-##### PART ONE SOLUTION #####
-
 def getColor(roundStr, color):
     colorStrings = roundStr.split(", ")
     for colorStr in colorStrings:
@@ -32,31 +30,39 @@ class Game:
         for roundStr in roundStrings:
             self.rounds.append(Round(roundStr))
 
-    def getMaxColors(self):
-        maxColors = Round("")
+        self.maxColors = Round("")
         for round in self.rounds:
-            if round.red > maxColors.red:
-                maxColors.red = round.red
-            if round.green > maxColors.green:
-                maxColors.green = round.green
-            if round.blue > maxColors.blue:
-                maxColors.blue = round.blue
-        return maxColors
+            if round.red > self.maxColors.red:
+                self.maxColors.red = round.red
+            if round.green > self.maxColors.green:
+                self.maxColors.green = round.green
+            if round.blue > self.maxColors.blue:
+                self.maxColors.blue = round.blue
 
-# games = []
-# maxColorsByGame = []
+        powerMulticands = [self.maxColors.red, self.maxColors.green, self.maxColors.blue]
 
-possibleGames = []
+        # if one of the max colors is 0, exclude it from multiplication
+        for multiplicand in powerMulticands:
+            if multiplicand == 0:
+                del multiplicand
+
+        self.power = np.prod(powerMulticands)
+
+possibleGames = []  # part 1
+powers = []         # part 2
 
 part1colors = Round("12 red, 13 green, 14 blue")
 
 for line in lines:
     game = Game(line)
-    maxColors = game.getMaxColors()
-    if maxColors > part1colors:
-        continue
-    possibleGames.append(game.gameID)
-    # games.append(game)
-    # maxColorsByGame.append(game.getMaxColors())
+    # maxColors = game.getMaxColors()
+    # if maxColors > part1colors:
+    #     continue
+    # possibleGames.append(game.gameID)
+    powers.append(game.power)
 
-print(np.sum(possibleGames))
+# PART ONE
+# print(np.sum(possibleGames))
+
+# PART TWO
+print(np.sum(powers))
