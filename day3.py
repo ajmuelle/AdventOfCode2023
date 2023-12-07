@@ -1,6 +1,20 @@
 import numpy as np
 
-with open("input/day2.txt") as day2:
-    lines = day2.readlines()
+with open("input/day3.txt") as day3:
+    lines = day3.readlines()
 
-pass
+numbers2d = []
+isNumber = False
+currentStr = ""
+
+for line in lines:
+    numbers = []
+    for index, char in enumerate(line):
+        if char.isdigit():
+            currentStr += char
+        elif currentStr:
+            numbers.append((index - len(currentStr), int(currentStr)))
+            currentStr = ""
+    numbers2d.append(numbers)
+
+for rowIndex, numbers in numbers2d
