@@ -1,9 +1,10 @@
 import numpy as np
 
-with open("input/day4.txt") as day4:
+with open("input/day4tiny.txt") as day4:
     lines = day4.readlines()
 
 scores = []
+winCounts = []
 
 for line in lines:
     cardPart, numbersPart = line.split(":")
@@ -16,5 +17,17 @@ for line in lines:
     if len(myWins) > 0:
         score = int(2 ** (len(myWins) - 1))
         scores.append(score)
+    winCounts.append(len(myWins))
 
-print(np.sum(scores))
+# print(np.sum(scores))
+
+cardCopies = [1] * len(winCounts)
+
+for index, count in enumerate(winCounts):
+    for nextIndex in range(index + 1, index + count + 1):
+        try:
+            cardCopies[nextIndex] += winCounts[nextIndex - 1]
+        except IndexError:
+            break
+
+print(np.sum(cardCopies))
