@@ -1,6 +1,6 @@
 import numpy as np
 
-with open("input/day4tiny.txt") as day4:
+with open("input/day4.txt") as day4:
     lines = day4.readlines()
 
 scores = []
@@ -26,7 +26,7 @@ cardCopies = [1] * len(winCounts)
 for index, count in enumerate(winCounts):
     for nextIndex in range(index + 1, index + count + 1):
         try:
-            cardCopies[nextIndex] += winCounts[nextIndex - 1]
+            cardCopies[nextIndex] += cardCopies[index]
         except IndexError:
             break
 
