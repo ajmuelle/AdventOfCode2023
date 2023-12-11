@@ -9,7 +9,7 @@ letter2number = {
     "A": 14,
     "K": 13,
     "Q": 12,
-    "J": 11,
+    "J": 1,     # 11 in part 1
     "T": 10
 }
 
@@ -24,6 +24,34 @@ class HandType(IntEnum):
 
 def getHandType(cards):
     uniqueCards, cardCounts = np.unique(cards, return_counts=True)
+
+    # for part 2
+    if 1 in uniqueCards:
+        match len(uniqueCards):
+            case 1:
+                # base case: hand is literally JJJJJ
+                return HandType.FIVE_OF_A_KIND
+            case 2:
+                # J becomes the other card
+                return HandType.FIVE_OF_A_KIND
+            case 3:
+                if 3 in cardCounts:
+                    # 1 J pairs with 3 equal or 3 Js pair with 1 equal
+                    return HandType.FOUR_OF_A_KIND
+                elif cardCounts[0] == 2:
+                    # 2 Js pair with 2 equal
+                    return HandType.FOUR_OF_A_KIND
+                else:
+                    # 2 Js pair with 1 equal or 1 J pairs with 2 equal
+                    return HandType.FULL_HOUSE
+            case 4:
+                # J always ends up in 3 group, because 3 of a kind > 2 pair
+                return HandType.THREE_OF_A_KIND
+            case _:
+                # J pairs with the highest other card
+                return HandType.ONE_PAIR
+
+    # part 1 version
     match len(uniqueCards):
         case 1:
             return HandType.FIVE_OF_A_KIND
