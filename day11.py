@@ -22,9 +22,9 @@ for line in lines:
             columnsWithGalaxies.add(index)
 allColumnIndices = set(range(lineLength))
 emptyColumns = allColumnIndices.difference(columnsWithGalaxies)
-for column in reversed(list(emptyColumns)):
-    for line in lines:
-        line = f"{line[:column]}.{line[column:]}"
+for column in reversed(list(sorted(emptyColumns))):
+    for index, line in enumerate(lines):
+        lines[index] = f"{line[:column]}.{line[column:]}"
 
 # compute galactic indices
 galaxyCoords = []
@@ -33,4 +33,12 @@ for lineIndex, line in enumerate(lines):
         if char == "#":
             galaxyCoords.append((lineIndex, charIndex))
 
-pass
+# compute minimum distances
+minDists = []
+for index1, coord1 in enumerate(galaxyCoords):
+    for index2, coord2 in enumerate(galaxyCoords[index1:]):
+        minDist = np.abs(coord1[0] - coord2[0]) + np.abs(coord1[1] - coord2[1])
+        minDists.append(minDist)
+
+print(np.sum(minDists))
+# 9366888 too low
