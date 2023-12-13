@@ -5,40 +5,48 @@ with open("input/day11.txt") as day11:
 
 lineLength = len(lines[0]) - 1  # ignore the newline
 
-# expand space vertically
+# find empty lines
 dotsLine = "".join(["."] * lineLength) + "\n"
-dotLineIndices = []
+emptyLines = []
 for index, line in enumerate(lines):
     if line == dotsLine:
-        dotLineIndices.append(index)
-for index in reversed(dotLineIndices):
-    lines.insert(index, dotsLine)
+        emptyLines.append(index)
 
-# expand space horizontally
+# find empty columns
 columnsWithGalaxies = set()
 for line in lines:
     for index, char in enumerate(line):
         if char == "#":
             columnsWithGalaxies.add(index)
 allColumnIndices = set(range(lineLength))
-emptyColumns = allColumnIndices.difference(columnsWithGalaxies)
-for column in reversed(list(sorted(emptyColumns))):
-    for index, line in enumerate(lines):
-        lines[index] = f"{line[:column]}.{line[column:]}"
+emptyColumns = sorted(allColumnIndices.difference(columnsWithGalaxies))
 
-# compute galactic indices
+# compute (pre-expansion) galactic indices
 galaxyCoords = []
 for lineIndex, line in enumerate(lines):
     for charIndex, char in enumerate(line):
         if char == "#":
             galaxyCoords.append((lineIndex, charIndex))
 
+def distExpanded(coord1, coord2):
+    """Account for universe expansion without actually computing it."""
+    # using x to mean row/line, y to mean column
+    bigX, smallX = (coord1[0], coord2[0]) if coord1[0] > coord2[0] else (coord2[0], coord1[0])
+    bigY, smallY = (coord1[1], coord2[1]) if coord1[1] > coord2[1] else (coord2[1], coord1[1])
+    xDelta = bigX - smallX
+    yDelta = bigY - smallY
+    for x in range(smallX, bigX):
+        if x in emptyLines:
+            xDelta += 999999    # 1 in part 1
+    for y in range(smallY, bigY):
+        if y in emptyColumns:
+            yDelta += 999999    # 1 in part 1
+    return xDelta + yDelta
+
 # compute minimum distances
 minDists = []
 for index1, coord1 in enumerate(galaxyCoords):
     for index2, coord2 in enumerate(galaxyCoords[index1:]):
-        minDist = np.abs(coord1[0] - coord2[0]) + np.abs(coord1[1] - coord2[1])
-        minDists.append(minDist)
+        minDists.append(distExpanded(coord1, coord2))
 
 print(np.sum(minDists))
-# 9366888 too low
