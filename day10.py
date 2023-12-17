@@ -41,8 +41,11 @@ def getSurroundings(coord):
             continue
     return surroundings
 
+pathCoords = {index: [] for index in range(len(lines))}
+
 def followPath(current, destination, direction, count):
     while current != destination or count == 0:
+        pathCoords[current[0]].append(current[1])
         surroundings = getSurroundings(current)
         nextTile = surroundings[direction]
         current = applyDelta(current, direction)
@@ -56,4 +59,62 @@ surroundings = getSurroundings(SLocation)
 # cheating a bit, we know the tile north of S is valid
 count = followPath(SLocation, SLocation, "north", 0)
 
-print(count // 2)
+# part 1
+# print(count // 2)
+
+# part 2
+pathCoords = {index: np.sort(coords) for index, coords in pathCoords.items() if len(coords) > 0}
+
+# run this only once to make a version of day 10 input that I can actually see
+# newLines = []
+# for lineIndex, line in enumerate(lines):
+#     newLine = ""
+#     for charIndex, char in enumerate(line):
+#         if lineIndex in pathCoords and charIndex in pathCoords[lineIndex]:
+#             newLine += char
+#         else:
+#             newLine += "."
+#     newLine += "\n"
+#     newLines.append(newLine)
+# with open("input/day10fake.txt", "w") as day10fake:
+#     day10fake.writelines(newLines)
+
+def isCharEnclosed(lineIndex, charIndex, pipeIndices):
+    barCount = 0
+    line = lines[lineIndex]
+    FSeen = False
+    LSeen = False
+    for rightIndex in range(charIndex + 1, len(line)):
+        if rightIndex in pipeIndices:
+            currentChar = line[rightIndex]
+            if currentChar == "|":
+                barCount += 1
+            elif (FSeen and currentChar == "J") or (LSeen and currentChar == "7"):
+                barCount += 1
+                FSeen = False
+                LSeen = False
+            elif FSeen and currentChar == "7":
+                FSeen = False
+            elif LSeen and currentChar == "J":
+                LSeen = False
+            elif currentChar == "F":
+                FSeen = True
+            elif currentChar == "L":
+                LSeen = True
+
+    return barCount % 2 == 1
+
+
+count = 0
+for lineIndex, pipeIndices in pathCoords.items():
+    charsEnclosed = []
+    for charIndex in range(pipeIndices[0], pipeIndices[-1] + 1):
+        currentChar = lines[lineIndex][charIndex]
+        if charIndex not in pipeIndices:
+            if isCharEnclosed(lineIndex, charIndex, pipeIndices):
+                count += 1
+                charsEnclosed.append(charIndex)
+    print(f"on line {lineIndex} the enclosed chars are {charsEnclosed}")
+
+print(count)
+
