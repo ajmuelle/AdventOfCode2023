@@ -50,6 +50,24 @@ def consecutiveCombos(N, numbers, count=0):
     return combos
 
 
+def consecutiveCombos_iterative(N, numbers):
+    combosByNumber = []
+    numnums = len(numbers)
+    leftBound = 0
+    for index, number in enumerate(numbers):
+        leftSum = sum(numbers[:index + 1]) + index
+        rightSum = sum(numbers[index + 1:]) if index + 1 < numnums else 0
+        numCommas = numnums - (index + 1)
+        rightBound = N - leftSum - rightSum - numCommas + 1
+        combo = [tuple(range(leftBound + offset, leftBound + offset + number))
+                 for offset in range(rightBound)]
+        combosByNumber.append(combo)
+        leftBound += (number + 1)
+    pass
+    # TODO: not this
+    return tuple(itertools.chain.from_iterable(itertools.chain.from_iterable(combosByNumber)))
+
+
 def processIndicator(indicator):
     if np.all(indicator):
         return "#"
@@ -82,7 +100,7 @@ def countArrangements(sharpPart, numbers):
 
     # the set of all possible sharp indices that satisfy numbers, ignoring ?s
     # consecutiveSet = set(tuple(combo) for combo in consecutiveCombos(len(sharpPart), numbers))
-    consecutiveSet = set(consecutiveCombos(len(sharpPart), numbers))
+    consecutiveSet = set(consecutiveCombos_iterative(len(sharpPart), numbers))
     arrangements = 0
 
     # the set of all possible indices where a question mark could be a sharp
